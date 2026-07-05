@@ -58,10 +58,8 @@ function drawScene(sceneIndex) {
     if (sceneIndex === 1) {
         d3.select("#scene-description").text("Scene 1: Overall Pass vs Fail Rate of Chicago Food Establishments.");
         
-        // check data
         let counts = {"Pass": 0, "Pass w/ Conditions": 0, "Fail": 0};
         inspectionData.forEach(d => {
-            // limit to 3 status
             if(counts[d.results] !== undefined) {
                 counts[d.results]++;
             }
@@ -73,76 +71,69 @@ function drawScene(sceneIndex) {
             {status: "Fail", count: counts["Fail"]}
         ];
         
-        //  fact check if null
         console.log("Scene 1 Plot Data:", plotData);
 
-        // set up the size
-        const margin = {top: 50, right: 150, bottom: 50, left: 150};
+        const margin = {top: 80, right: 150, bottom: 50, left: 100};
         const width = 800 - margin.left - margin.right;
         const height = 500 - margin.top - margin.bottom;
 
         const g = svg.append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        // scale
-        const yScale = d3.scaleBand()
+        const xScale = d3.scaleBand()
             .domain(plotData.map(d => d.status))
-            .range([0, height])
+            .range([0, width])
             .padding(0.3);
 
-        const xScale = d3.scaleLinear()
+        const yScale = d3.scaleLinear()
             .domain([0, d3.max(plotData, d => d.count) || 10]) 
-            .range([0, width]);
-
-        // axes
-        g.append("g")
-            .attr("class", "y-axis")
-            .call(d3.axisLeft(yScale).tickSize(0))
-            .style("font-size", "14px");
+            .range([height, 0]);
 
         g.append("g")
             .attr("class", "x-axis")
             .attr("transform", `translate(0,${height})`)
-            .call(d3.axisBottom(xScale).ticks(5))
+            .call(d3.axisBottom(xScale))
+            .style("font-size", "14px");
+
+        g.append("g")
+            .attr("class", "y-axis")
+            .call(d3.axisLeft(yScale).ticks(5))
             .style("font-size", "12px");
 
-        // bar chart
         g.selectAll("rect")
             .data(plotData)
             .enter()
             .append("rect")
-            .attr("y", d => yScale(d.status))
-            .attr("x", 0)
-            .attr("height", yScale.bandwidth())
+            .attr("x", d => xScale(d.status))
+            .attr("width", xScale.bandwidth())
             .attr("fill", d => d.status === "Fail" ? "#d9534f" : "#5bc0de")
-            .attr("width", 0) 
-            .transition()     
-            .duration(1000)   
-            .attr("width", d => xScale(d.count));
+            .attr("y", height)
+            .attr("height", 0)
+            .transition()
+            .duration(1000)
+            .attr("y", d => yScale(d.count))
+            .attr("height", d => height - yScale(d.count));
 
-        //  Annotations
         const failCount = counts["Fail"];
         
-        // 
         if (failCount > 0) {
             try {
                 const annotations = [{
                     note: {
                         title: "Significant Failure Rate",
-                        label: `${failCount} establishments failed their recent inspection, posing potential public health risks.`,
+                        label: `${failCount} establishments failed their recent inspection.`,
                         wrap: 150 
                     },
-                    x: xScale(failCount),
-                    y: yScale("Fail") + yScale.bandwidth() / 2,
-                    dy: -60, 
-                    dx: 50   
+                    x: xScale("Fail") + xScale.bandwidth() / 2,
+                    y: yScale(failCount),
+                    dy: -40,
+                    dx: 40
                 }];
 
                 const makeAnnotations = d3.annotation()
                     .type(d3.annotationCalloutElbow)
                     .annotations(annotations);
 
-                // 
                 setTimeout(() => {
                     g.append("g")
                         .attr("class", "annotation-group")
@@ -155,6 +146,7 @@ function drawScene(sceneIndex) {
         }
         
         console.log("Drawing Scene 1 Finished");
+    
     
 
     } else if (sceneIndex === 2) {
