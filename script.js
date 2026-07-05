@@ -56,7 +56,7 @@ function drawScene(sceneIndex) {
     d3.select("#tooltip").classed("hidden", true);
 
     if (sceneIndex === 1) {
-        d3.select("#scene-description").text("Scene 1: Overall Pass vs Fail Rate of Chicago Food Establishments. Most recent 5000 records as of July 5th");
+        d3.select("#scene-description").text("Scene 1: Overall Pass vs Fail Rate of Chicago Food Establishments. Most recent 5000 records as of 7/5/2026");
         
         let counts = {"Pass": 0, "Pass w/ Conditions": 0, "Fail": 0};
         inspectionData.forEach(d => {
@@ -150,13 +150,159 @@ function drawScene(sceneIndex) {
     
 
     } else if (sceneIndex === 2) {
-        d3.select("#scene-description").text("Scene 2: High Risk Facilities - Why Restaurants fail more often.");
-        // fail
-        console.log("Drawing Scene 2");
+        d3.select("#scene-description").text("Scene 2: The Drill-down - Which facility types fail the most?");
 
+        let facilityCounts = {};
+        inspectionData.forEach(d => {
+            if (d.results === "Fail" && d.facility_type) {
+                let type = d.facility_type.toUpperCase();
+                facilityCounts[type] = (facilityCounts[type] || 0) + 1;
+            }
+        });
+
+        const plotData = Object.keys(facilityCounts)
+            .map(k => ({type: k, count: facilityCounts[k]}))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+
+        console.log("Scene 2 Plot Data:", plotData);
+
+        const margin = {top: 80, right: 150, bottom: 80, left: 100};
+        const width = 800 - margin.left - margin.right;
+        const height = 500 - margin.top - margin.bottom;
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const xScale = d3.scaleBand()
+            .domain(plotData.map(d => d.type))
+            .range([0, width])
+            .padding(0.3);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, d3.max(plotData, d => d.count) || 10])
+            .range([height, 0]);
+
+        g.append("g")
+            .attr("class", "x-axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(xScale))
+            .selectAll("text")
+            .attr("transform", "rotate(-15)")
+            .style("text-anchor", "end")
+            .style("font-size", "11px");
+
+        g.append("g")
+            .attr("class", "y-axis")
+            .call(d3.axisLeft(yScale).ticks(5))
+            .style("font-size", "12px");
+
+        g.selectAll("rect")
+            .data(plotData)
+            .enter()
+            .append("rect")
+            .attr("x", d => xScale(d.type))
+            .attr("width", xScale.bandwidth())
+            .attr("fill", "#d9534f")
+            .attr("y", height)
+            .attr("height", 0)
+            .transition()
+            .duration(1000)
+            .attr("y", d => yScale(d.count))
+            .attr("height", d => height - yScale(d.count));
+
+        if (plotData.length > 0) {
+            try {
+                const topTarget = plotData[0];
+                const annotations = [{
+                    note: {
+                        title: "Restaurants Dominate",
+                        label: `Traditional restaurants account for the vast majority of failed inspections.`,
+                        wrap: 150
+                    },
+                    x: xScale(topTarget.type) + xScale.bandwidth() / 2,
+                    y: yScale(topTarget.count),
+                    dy: -30,
+                    dx: 60
+                }];
+
+                const makeAnnotations = d3.annotation()
+                    .type(d3.annotationCalloutElbow)
+                    .annotations(annotations);
+
+                setTimeout(() => {
+                    g.append("g")
+                        .attr("class", "annotation-group")
+                        .call(makeAnnotations)
+                        .style("font-size", "12px");
+                }, 1000);
+            } catch (error) {
+                console.error("D3 Annotation Error:", error);
+            }
+        }
+
+        console.log("Drawing Scene 2 Finished");
     } else if (sceneIndex === 3) {
-        d3.select("#scene-description").text("Scene 3: Explore the Violation Map. Hover over the red dots to see details.");
-        // the scatterplot map
-        console.log("Drawing Scene 3");
+        d3.select("#scene-description").text("Scene 3: Explore the Violation Map. Hover over the dots to see details.");
+
+        const validData = inspectionData.filter(d => d.longitude && d.latitude);
+        
+        console.log("Scene 3 Plot Data:", validData.length, "valid locations");
+
+        const margin = {top: 20, right: 20, bottom: 20, left: 20};
+        const width = 800 - margin.left - margin.right;
+        const height = 500 - margin.top - margin.bottom;
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const xScale = d3.scaleLinear()
+            .domain(d3.extent(validData, d => parseFloat(d.longitude)))
+            .range([0, width]);
+
+        const yScale = d3.scaleLinear()
+            .domain(d3.extent(validData, d => parseFloat(d.latitude)))
+            .range([height, 0]);
+
+        const tooltip = d3.select("#tooltip");
+
+        g.selectAll("circle")
+            .data(validData)
+            .enter()
+            .append("circle")
+            .attr("cx", d => xScale(parseFloat(d.longitude)))
+            .attr("cy", d => yScale(parseFloat(d.latitude)))
+            .attr("r", 2.5)
+            .attr("fill", d => d.results === "Fail" ? "#d9534f" : "#5bc0de")
+            .attr("opacity", 0)
+            .transition()
+            .duration(1500)
+            .attr("opacity", 0.6);
+
+        g.selectAll("circle")
+            .on("mouseover", function(d) {
+                d3.select(this)
+                  .attr("stroke", "#333")
+                  .attr("stroke-width", 1.5)
+                  .attr("opacity", 1)
+                  .attr("r", 5);
+                
+                tooltip.classed("hidden", false)
+                    .html(`<strong>${d.dba_name}</strong><br>Status: ${d.results}<br>Risk: ${d.risk}`);
+            })
+            .on("mousemove", function() {
+                tooltip.style("left", (d3.event.pageX + 15) + "px")
+                       .style("top", (d3.event.pageY - 25) + "px");
+            })
+            .on("mouseout", function() {
+                d3.select(this)
+                  .attr("stroke", "none")
+                  .attr("opacity", 0.6)
+                  .attr("r", 2.5);
+                
+                tooltip.classed("hidden", true);
+            });
+
+        console.log("Drawing Scene 3 Finished");
     }
 }
