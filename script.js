@@ -7,7 +7,7 @@ let inspectionData = []; // to store the data from CFI api
 async function init() {
     try {
         // request the data...set limit to 5000 records, otherwise the SVG could crash the memory due to massive data to render....
-        const url = "https://data.cityofchicago.org/resource/4ijn-s7e5.json?$limit=5000";
+        const url = "https://data.cityofchicago.org/resource/4ijn-s7e5.json?$limit=5000$order=inspection_date DESC";
         inspectionData = await d3.json(url);
         
         console.log("Data loaded successfully:", inspectionData);
