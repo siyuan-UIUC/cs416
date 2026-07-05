@@ -303,6 +303,35 @@ function drawScene(sceneIndex) {
                 tooltip.classed("hidden", true);
             });
 
+        const legend = g.append("g")
+            .attr("transform", `translate(${width - 80}, 20)`);
+
+        legend.append("circle")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("r", 5)
+            .attr("fill", "#d9534f");
+            
+        legend.append("text")
+            .attr("x", 12)
+            .attr("y", 4)
+            .text("Fail")
+            .style("font-size", "12px")
+            .attr("alignment-baseline", "middle");
+
+        legend.append("circle")
+            .attr("cx", 0)
+            .attr("cy", 20)
+            .attr("r", 5)
+            .attr("fill", "#5bc0de");
+            
+        legend.append("text")
+            .attr("x", 12)
+            .attr("y", 24)
+            .text("Pass")
+            .style("font-size", "12px")
+            .attr("alignment-baseline", "middle");
+
         console.log("Drawing Scene 3 Finished");
     }
 }
