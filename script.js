@@ -126,11 +126,11 @@ function drawScene(sceneIndex) {
                     note: {
                         title: "Significant Failure Rate",
                         label: `${failCount} establishments failed their recent inspection.`,
-                        wrap: 300 
+                        wrap: 200 
                     },
                     x: xScale("Fail") + xScale.bandwidth() / 2,
                     y: yScale(failCount),
-                    dy: 40,
+                    dy: -30,
                     dx: 90
                 }];
 
