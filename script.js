@@ -126,7 +126,7 @@ function drawScene(sceneIndex) {
                     note: {
                         title: "Significant Failure Rate",
                         label: `${failCount} establishments failed their recent inspection.`,
-                        wrap: 150 
+                        wrap: 300 
                     },
                     x: xScale("Fail") + xScale.bandwidth() / 2,
                     y: yScale(failCount),
@@ -223,11 +223,11 @@ function drawScene(sceneIndex) {
                     note: {
                         title: "Restaurants Dominate",
                         label: `Traditional restaurants account for the vast majority of failed inspections.`,
-                        wrap: 150
+                        wrap: 300
                     },
                     x: xScale(topTarget.type) + xScale.bandwidth() / 2,
                     y: yScale(topTarget.count),
-                    dy: -5,
+                    dy: -10,
                     dx: 60
                 }];
 
