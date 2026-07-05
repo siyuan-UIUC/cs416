@@ -56,7 +56,7 @@ function drawScene(sceneIndex) {
     d3.select("#tooltip").classed("hidden", true);
 
     if (sceneIndex === 1) {
-        d3.select("#scene-description").text("Scene 1: Overall Pass vs Fail Rate of Chicago Food Establishments. Note: Most recent 5000 records as of July 5th");
+        d3.select("#scene-description").text("Scene 1: Overall Pass vs Fail Rate of Chicago Food Establishments. Most recent 5000 records as of July 5th");
         
         let counts = {"Pass": 0, "Pass w/ Conditions": 0, "Fail": 0};
         inspectionData.forEach(d => {
