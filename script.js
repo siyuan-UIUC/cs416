@@ -130,8 +130,8 @@ function drawScene(sceneIndex) {
                     },
                     x: xScale("Fail") + xScale.bandwidth() / 2,
                     y: yScale(failCount),
-                    dy: -40,
-                    dx: 40
+                    dy: 40,
+                    dx: 90
                 }];
 
                 const makeAnnotations = d3.annotation()
