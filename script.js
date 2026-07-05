@@ -227,7 +227,7 @@ function drawScene(sceneIndex) {
                     },
                     x: xScale(topTarget.type) + xScale.bandwidth() / 2,
                     y: yScale(topTarget.count),
-                    dy: 0,
+                    dy: -5,
                     dx: 60
                 }];
 
