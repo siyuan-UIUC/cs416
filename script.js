@@ -55,6 +55,10 @@ function drawScene(sceneIndex) {
     // switch to hidden tooltip
     d3.select("#tooltip").classed("hidden", true);
 
+
+    // **************************************************
+    // SCENE 1 OVERALL
+    // **************************************************
     if (sceneIndex === 1) {
         d3.select("#scene-description").text("Scene 1: Overall Pass vs Fail Rate of Chicago Food Establishments. Most recent 5000 records as of 7/5/2026");
         
@@ -74,8 +78,8 @@ function drawScene(sceneIndex) {
         console.log("Scene 1 Plot Data:", plotData);
 
         const margin = {top: 80, right: 150, bottom: 50, left: 100};
-        const width = 800 - margin.left - margin.right;
-        const height = 500 - margin.top - margin.bottom;
+        const width = 1000 - margin.left - margin.right;
+        const height = 800 - margin.top - margin.bottom;
 
         const g = svg.append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -146,8 +150,9 @@ function drawScene(sceneIndex) {
         }
         
         console.log("Drawing Scene 1 Finished");
-    
-    
+    // **************************************************
+    // SCENE 2 DRILL-DOWN
+    // **************************************************
 
     } else if (sceneIndex === 2) {
         d3.select("#scene-description").text("Scene 2: The Drill-down - Which facility types fail the most?");
@@ -167,9 +172,9 @@ function drawScene(sceneIndex) {
 
         console.log("Scene 2 Plot Data:", plotData);
 
-        const margin = {top: 80, right: 150, bottom: 80, left: 100};
-        const width = 800 - margin.left - margin.right;
-        const height = 500 - margin.top - margin.bottom;
+        const margin = {top: 120, right: 150, bottom: 80, left: 100};
+        const width = 1000 - margin.left - margin.right; // Updated to 1000
+        const height = 800 - margin.top - margin.bottom;
 
         const g = svg.append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -242,6 +247,9 @@ function drawScene(sceneIndex) {
         }
 
         console.log("Drawing Scene 2 Finished");
+    // **************************************************
+    // SCENE 3 heatmap
+    // **************************************************    
     } else if (sceneIndex === 3) {
         d3.select("#scene-description").html('Scene 3: Explore the Violation Map. Hover over the dots to see details. (<span style="color:#d9534f;">● Fail</span>, <span style="color:#5bc0de;">● Pass</span>)');
 
@@ -250,8 +258,8 @@ function drawScene(sceneIndex) {
         console.log("Scene 3 Plot Data:", validData.length, "valid locations");
 
         const margin = {top: 20, right: 20, bottom: 20, left: 20};
-        const width = 800 - margin.left - margin.right;
-        const height = 500 - margin.top - margin.bottom;
+        const width = 1000 - margin.left - margin.right;
+        const height = 800 - margin.top - margin.bottom;
 
         const g = svg.append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
