@@ -243,7 +243,7 @@ function drawScene(sceneIndex) {
 
         console.log("Drawing Scene 2 Finished");
     } else if (sceneIndex === 3) {
-        d3.select("#scene-description").text("Scene 3: Explore the Violation Map. Hover over the dots to see details.");
+        d3.select("#scene-description").html('Scene 3: Explore the Violation Map. Hover over the dots to see details. (<span style="color:#d9534f;">● Fail</span>, <span style="color:#5bc0de;">● Pass</span>)');
 
         const validData = inspectionData.filter(d => d.longitude && d.latitude);
         
